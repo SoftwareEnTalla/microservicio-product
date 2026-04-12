@@ -29,6 +29,7 @@
  */
 
 import { InputType, Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
@@ -204,7 +205,7 @@ export class BaseProductAttributeDto {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Opciones para enum', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Opciones para enum', nullable: true })
   enumOptions?: Record<string, any> = {};
 
   @ApiProperty({
@@ -274,7 +275,7 @@ export class BaseProductAttributeDto {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Metadatos del atributo o valor', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Metadatos del atributo o valor', nullable: true })
   metadata?: Record<string, any> = {};
 
   // Constructor

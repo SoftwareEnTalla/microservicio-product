@@ -34,6 +34,7 @@ import { CreateProductAttributeDto, UpdateProductAttributeDto, DeleteProductAttr
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Field, Float, Int, ObjectType } from "@nestjs/graphql";
+import GraphQLJSON from 'graphql-type-json';
 import { plainToInstance } from 'class-transformer';
 
 
@@ -170,7 +171,7 @@ export class ProductAttribute extends BaseEntity {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Opciones para enum', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Opciones para enum', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Opciones para enum' })
   enumOptions?: Record<string, any> = {};
 
@@ -247,7 +248,7 @@ export class ProductAttribute extends BaseEntity {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Metadatos del atributo o valor', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Metadatos del atributo o valor', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Metadatos del atributo o valor' })
   metadata?: Record<string, any> = {};
 
