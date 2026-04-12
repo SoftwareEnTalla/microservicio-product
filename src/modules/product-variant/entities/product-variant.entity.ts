@@ -34,6 +34,7 @@ import { CreateProductVariantDto, UpdateProductVariantDto, DeleteProductVariantD
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Field, Float, Int, ObjectType } from "@nestjs/graphql";
+import GraphQLJSON from 'graphql-type-json';
 import { plainToInstance } from 'class-transformer';
 import { Product } from '../../product/entities/product.entity';
 import { ProductMedia } from '../../product-media/entities/product-media.entity';
@@ -207,7 +208,7 @@ export class ProductVariant extends BaseEntity {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Metadatos de la variante', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Metadatos de la variante', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Metadatos de la variante' })
   metadata?: Record<string, any> = {};
 

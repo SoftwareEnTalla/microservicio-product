@@ -40,6 +40,7 @@ import { AppDataSource, initializeDatabase } from "./data-source";
 import { ProductQueryController } from "./modules/product/controllers/productquery.controller";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import GraphQLJSON from "graphql-type-json";
 import { ProductCommandService } from "./modules/product/services/productcommand.service";
 import { ProductQueryService } from "./modules/product/services/productquery.service";
 import { CacheModule } from "@nestjs/cache-manager";
@@ -71,8 +72,6 @@ import { ProductSpecificationQueryService } from "./modules/product-specificatio
 import { ProductVariantModule } from "./modules/product-variant/modules/productvariant.module";
 import { ProductVariantCommandService } from "./modules/product-variant/services/productvariantcommand.service";
 import { ProductVariantQueryService } from "./modules/product-variant/services/productvariantquery.service";
-
-//import GraphQLJSON from "graphql-type-json";
 
 /*
 //TODO unused for while dependencies
@@ -158,6 +157,7 @@ import LoggerService, { logger } from "@core/logs/logger";
             buildSchemaOptions: {
               dateScalarMode: "timestamp",
             },
+            resolvers: { JSON: GraphQLJSON },
           }),
         ]
       : []),

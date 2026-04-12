@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 SoftwarEnTalla
+ * Copyright (c) 2026 SoftwarEnTalla
  * Licencia: MIT
  * Contacto: softwarentalla@gmail.com
  * CEOs: 
@@ -29,7 +29,15 @@
  */
 
 
-import { CodetraceModule } from "@modules/codetrace/modules/codetrace.module";
+import { ProductModule } from "@modules/product/modules/product.module";
+import { ProductAttributeModule } from "@modules/product-attribute/modules/productattribute.module";
+import { ProductInventoryModule } from "@modules/product-inventory/modules/productinventory.module";
+import { ProductMediaModule } from "@modules/product-media/modules/productmedia.module";
+import { ProductPriceModule } from "@modules/product-price/modules/productprice.module";
+import { ProductPromotionModule } from "@modules/product-promotion/modules/productpromotion.module";
+import { ProductRelationshipModule } from "@modules/product-relationship/modules/productrelationship.module";
+import { ProductSpecificationModule } from "@modules/product-specification/modules/productspecification.module";
+import { ProductVariantModule } from "@modules/product-variant/modules/productvariant.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { logger } from '@core/logs/logger';
 
@@ -38,18 +46,19 @@ import { logger } from '@core/logs/logger';
 export function setupSwagger(
   app,
   apiDoc: string = "api-docs",
-  title: string = "Codetrace Service API",
-  description: string = "API completa para gestión de Codetraces con documentación automática",
+  title: string = "Product Service API",
+  description: string = "API completa para gestión de Products con documentación automática",
   version: string = "1.0"
 ): string {
 try{
+  const localPort = String(process.env.PORT || "3000");
       const swaggerConfig = new DocumentBuilder()
         .setTitle(title)
         .setDescription(description)
         .setVersion(version)
         // Organiza por módulos/funcionalidades
         //.addTag("Authentication", "Operaciones de autenticación y usuarios")
-        //.addTag("Codetraces", "Gestión de transacciones y procesamiento de codetraces")
+        //.addTag("Products", "Gestión de transacciones y procesamiento de products")
         //.addTag("Subscriptions", "Manejo de suscripciones recurrentes")
         //.addTag("Webhooks", "Endpoints para integraciones externas")
         //.addTag("Reports", "Generación de reportes y analytics")
@@ -68,11 +77,18 @@ try{
         // Servidores (para diferentes entornos)
         .addServer("https://api.production.com", "Production")
         .addServer("https://api.staging.com", "Staging")
-        .addServer("http://localhost:3000", "Local Development")
+        .addServer("http://localhost:" + localPort, "Local Development")
         .build();
 
       const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
-        include: [CodetraceModule /*, AuthModule, ReportsModule*/], // Lista todos los módulos
+        include: [ProductModule,         ProductAttributeModule,
+        ProductInventoryModule,
+        ProductMediaModule,
+        ProductPriceModule,
+        ProductPromotionModule,
+        ProductRelationshipModule,
+        ProductSpecificationModule,
+        ProductVariantModule,/*, AuthModule, ReportsModule*/], // Lista todos los módulos
         deepScanRoutes: true, // Escanea en profundidad
         ignoreGlobalPrefix: false, // Considera el prefijo global (api/)
         extraModels: [], // Añade esto
@@ -94,7 +110,7 @@ try{
           displayRequestDuration: true,
         },
         customCss: ".swagger-ui .topbar { background-color: #2c3e50; }", // Personalización
-        customSiteTitle: "Codetrace API Docs",
+        customSiteTitle: "Product API Docs",
         customfavIcon: "/favicon.ico",
       });
   }
