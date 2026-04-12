@@ -29,6 +29,7 @@
  */
 
 import { InputType, Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
@@ -194,7 +195,7 @@ export class BaseProductDto {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Categorías adicionales jerárquicas', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Categorías adicionales jerárquicas', nullable: true })
   additionalCategoryIds?: Record<string, any> = {};
 
   @ApiProperty({
@@ -224,7 +225,7 @@ export class BaseProductDto {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Palabras clave SEO', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Palabras clave SEO', nullable: true })
   keywords?: Record<string, any> = {};
 
   @ApiProperty({
@@ -274,7 +275,7 @@ export class BaseProductDto {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Metadatos extendidos del producto', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Metadatos extendidos del producto', nullable: true })
   metadata?: Record<string, any> = {};
 
   // Constructor

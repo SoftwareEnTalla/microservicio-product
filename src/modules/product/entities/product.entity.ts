@@ -34,6 +34,7 @@ import { CreateProductDto, UpdateProductDto, DeleteProductDto } from '../dtos/al
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Field, Float, Int, ObjectType } from "@nestjs/graphql";
+import GraphQLJSON from 'graphql-type-json';
 import { plainToInstance } from 'class-transformer';
 import { ProductVariant } from '../../product-variant/entities/product-variant.entity';
 import { ProductMedia } from '../../product-media/entities/product-media.entity';
@@ -165,7 +166,7 @@ export class Product extends BaseEntity {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Categorías adicionales jerárquicas', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Categorías adicionales jerárquicas', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Categorías adicionales jerárquicas' })
   additionalCategoryIds?: Record<string, any> = {};
 
@@ -198,7 +199,7 @@ export class Product extends BaseEntity {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Palabras clave SEO', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Palabras clave SEO', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Palabras clave SEO' })
   keywords?: Record<string, any> = {};
 
@@ -253,7 +254,7 @@ export class Product extends BaseEntity {
   })
   @IsObject()
   @IsOptional()
-  @Field(() => String, { description: 'Metadatos extendidos del producto', nullable: true })
+  @Field(() => GraphQLJSON, { description: 'Metadatos extendidos del producto', nullable: true })
   @Column({ type: 'json', nullable: true, comment: 'Metadatos extendidos del producto' })
   metadata?: Record<string, any> = {};
 
