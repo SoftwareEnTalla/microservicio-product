@@ -47,6 +47,11 @@ import {
   DeleteProductRelationshipCommand
 } from '../commands/exporting.command';
 
+//Logger - Codetrace
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
+
 @Injectable()
 export class ProductRelationshipCrudSaga {
   private readonly logger = new Logger(ProductRelationshipCrudSaga.name);
@@ -63,8 +68,9 @@ export class ProductRelationshipCrudSaga {
       ofType(ProductRelationshipCreatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para creación de ProductRelationship: ${event.aggregateId}`);
-        // Lógica post-creación (ej: enviar notificación)
+        void this.handleProductRelationshipCreated(event);
       }),
+      map(() => null),
       map(event => {
         // Ejecutar comandos adicionales si es necesario
         return null;
@@ -79,8 +85,9 @@ export class ProductRelationshipCrudSaga {
       ofType(ProductRelationshipUpdatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para actualización de ProductRelationship: ${event.aggregateId}`);
-        // Lógica post-actualización (ej: actualizar caché)
-      })
+        void this.handleProductRelationshipUpdated(event);
+      }),
+      map(() => null)
     );
   };
 
@@ -91,8 +98,9 @@ export class ProductRelationshipCrudSaga {
       ofType(ProductRelationshipDeletedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para eliminación de ProductRelationship: ${event.aggregateId}`);
-        // Lógica post-eliminación (ej: limpiar relaciones)
+        void this.handleProductRelationshipDeleted(event);
       }),
+      map(() => null),
       map(event => {
         // Ejemplo: Ejecutar comando de compensación
         // return this.commandBus.execute(new CompensateDeleteCommand(...));
@@ -101,6 +109,78 @@ export class ProductRelationshipCrudSaga {
     );
   };
 
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductRelationshipCrudSaga.name)
+      .get(ProductRelationshipCrudSaga.name),
+  })
+  private async handleProductRelationshipCreated(event: ProductRelationshipCreatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductRelationship Created completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductRelationshipCrudSaga.name)
+      .get(ProductRelationshipCrudSaga.name),
+  })
+  private async handleProductRelationshipUpdated(event: ProductRelationshipUpdatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductRelationship Updated completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductRelationshipCrudSaga.name)
+      .get(ProductRelationshipCrudSaga.name),
+  })
+  private async handleProductRelationshipDeleted(event: ProductRelationshipDeletedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductRelationship Deleted completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
 
   // Método para manejo de errores en sagas
   private handleSagaError(error: Error, event: any) {

@@ -47,6 +47,11 @@ import {
   DeleteProductAttributeCommand
 } from '../commands/exporting.command';
 
+//Logger - Codetrace
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
+
 @Injectable()
 export class ProductAttributeCrudSaga {
   private readonly logger = new Logger(ProductAttributeCrudSaga.name);
@@ -63,8 +68,9 @@ export class ProductAttributeCrudSaga {
       ofType(ProductAttributeCreatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para creación de ProductAttribute: ${event.aggregateId}`);
-        // Lógica post-creación (ej: enviar notificación)
+        void this.handleProductAttributeCreated(event);
       }),
+      map(() => null),
       map(event => {
         // Ejecutar comandos adicionales si es necesario
         return null;
@@ -79,8 +85,9 @@ export class ProductAttributeCrudSaga {
       ofType(ProductAttributeUpdatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para actualización de ProductAttribute: ${event.aggregateId}`);
-        // Lógica post-actualización (ej: actualizar caché)
-      })
+        void this.handleProductAttributeUpdated(event);
+      }),
+      map(() => null)
     );
   };
 
@@ -91,8 +98,9 @@ export class ProductAttributeCrudSaga {
       ofType(ProductAttributeDeletedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para eliminación de ProductAttribute: ${event.aggregateId}`);
-        // Lógica post-eliminación (ej: limpiar relaciones)
+        void this.handleProductAttributeDeleted(event);
       }),
+      map(() => null),
       map(event => {
         // Ejemplo: Ejecutar comando de compensación
         // return this.commandBus.execute(new CompensateDeleteCommand(...));
@@ -101,6 +109,78 @@ export class ProductAttributeCrudSaga {
     );
   };
 
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductAttributeCrudSaga.name)
+      .get(ProductAttributeCrudSaga.name),
+  })
+  private async handleProductAttributeCreated(event: ProductAttributeCreatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductAttribute Created completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductAttributeCrudSaga.name)
+      .get(ProductAttributeCrudSaga.name),
+  })
+  private async handleProductAttributeUpdated(event: ProductAttributeUpdatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductAttribute Updated completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductAttributeCrudSaga.name)
+      .get(ProductAttributeCrudSaga.name),
+  })
+  private async handleProductAttributeDeleted(event: ProductAttributeDeletedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductAttribute Deleted completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
 
   // Método para manejo de errores en sagas
   private handleSagaError(error: Error, event: any) {

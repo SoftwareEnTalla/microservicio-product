@@ -47,6 +47,11 @@ import {
   DeleteProductCommand
 } from '../commands/exporting.command';
 
+//Logger - Codetrace
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
+
 @Injectable()
 export class ProductCrudSaga {
   private readonly logger = new Logger(ProductCrudSaga.name);
@@ -63,8 +68,9 @@ export class ProductCrudSaga {
       ofType(ProductCreatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para creación de Product: ${event.aggregateId}`);
-        // Lógica post-creación (ej: enviar notificación)
+        void this.handleProductCreated(event);
       }),
+      map(() => null),
       map(event => {
         // Ejecutar comandos adicionales si es necesario
         return null;
@@ -79,8 +85,9 @@ export class ProductCrudSaga {
       ofType(ProductUpdatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para actualización de Product: ${event.aggregateId}`);
-        // Lógica post-actualización (ej: actualizar caché)
-      })
+        void this.handleProductUpdated(event);
+      }),
+      map(() => null)
     );
   };
 
@@ -91,8 +98,9 @@ export class ProductCrudSaga {
       ofType(ProductDeletedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para eliminación de Product: ${event.aggregateId}`);
-        // Lógica post-eliminación (ej: limpiar relaciones)
+        void this.handleProductDeleted(event);
       }),
+      map(() => null),
       map(event => {
         // Ejemplo: Ejecutar comando de compensación
         // return this.commandBus.execute(new CompensateDeleteCommand(...));
@@ -111,6 +119,78 @@ export class ProductCrudSaga {
       map(() => null)
     );
   };
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductCrudSaga.name)
+      .get(ProductCrudSaga.name),
+  })
+  private async handleProductCreated(event: ProductCreatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga Product Created completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductCrudSaga.name)
+      .get(ProductCrudSaga.name),
+  })
+  private async handleProductUpdated(event: ProductUpdatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga Product Updated completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductCrudSaga.name)
+      .get(ProductCrudSaga.name),
+  })
+  private async handleProductDeleted(event: ProductDeletedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga Product Deleted completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
 
   // Método para manejo de errores en sagas
   private handleSagaError(error: Error, event: any) {

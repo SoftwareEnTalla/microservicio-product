@@ -47,6 +47,11 @@ import {
   DeleteProductPromotionCommand
 } from '../commands/exporting.command';
 
+//Logger - Codetrace
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
+
 @Injectable()
 export class ProductPromotionCrudSaga {
   private readonly logger = new Logger(ProductPromotionCrudSaga.name);
@@ -63,8 +68,9 @@ export class ProductPromotionCrudSaga {
       ofType(ProductPromotionCreatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para creación de ProductPromotion: ${event.aggregateId}`);
-        // Lógica post-creación (ej: enviar notificación)
+        void this.handleProductPromotionCreated(event);
       }),
+      map(() => null),
       map(event => {
         // Ejecutar comandos adicionales si es necesario
         return null;
@@ -79,8 +85,9 @@ export class ProductPromotionCrudSaga {
       ofType(ProductPromotionUpdatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para actualización de ProductPromotion: ${event.aggregateId}`);
-        // Lógica post-actualización (ej: actualizar caché)
-      })
+        void this.handleProductPromotionUpdated(event);
+      }),
+      map(() => null)
     );
   };
 
@@ -91,8 +98,9 @@ export class ProductPromotionCrudSaga {
       ofType(ProductPromotionDeletedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para eliminación de ProductPromotion: ${event.aggregateId}`);
-        // Lógica post-eliminación (ej: limpiar relaciones)
+        void this.handleProductPromotionDeleted(event);
       }),
+      map(() => null),
       map(event => {
         // Ejemplo: Ejecutar comando de compensación
         // return this.commandBus.execute(new CompensateDeleteCommand(...));
@@ -101,6 +109,78 @@ export class ProductPromotionCrudSaga {
     );
   };
 
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductPromotionCrudSaga.name)
+      .get(ProductPromotionCrudSaga.name),
+  })
+  private async handleProductPromotionCreated(event: ProductPromotionCreatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductPromotion Created completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductPromotionCrudSaga.name)
+      .get(ProductPromotionCrudSaga.name),
+  })
+  private async handleProductPromotionUpdated(event: ProductPromotionUpdatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductPromotion Updated completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(ProductPromotionCrudSaga.name)
+      .get(ProductPromotionCrudSaga.name),
+  })
+  private async handleProductPromotionDeleted(event: ProductPromotionDeletedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga ProductPromotion Deleted completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
 
   // Método para manejo de errores en sagas
   private handleSagaError(error: Error, event: any) {
