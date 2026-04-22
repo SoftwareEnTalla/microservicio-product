@@ -48,6 +48,9 @@ import { LoggingModule } from "./modules/product/modules/logger.module";
 import { ModuleRef } from "@nestjs/core";
 import { ServiceRegistry } from "@core/service-registry";
 import LoggerService, { logger } from "@core/logs/logger";
+import { CatalogSyncLogModule } from "./modules/catalog-sync-log/modules/catalogsynclog.module";
+import { CatalogSyncLogCommandService } from "./modules/catalog-sync-log/services/catalogsynclogcommand.service";
+import { CatalogSyncLogQueryService } from "./modules/catalog-sync-log/services/catalogsynclogquery.service";
 import { ProductAttributeModule } from "./modules/product-attribute/modules/productattribute.module";
 import { ProductAttributeCommandService } from "./modules/product-attribute/services/productattributecommand.service";
 import { ProductAttributeQueryService } from "./modules/product-attribute/services/productattributequery.service";
@@ -135,7 +138,8 @@ import LoggerService, { logger } from "@core/logs/logger";
      */
     CqrsModule,
     ProductModule,
-        ProductAttributeModule,
+        CatalogSyncLogModule,
+    ProductAttributeModule,
     ProductInventoryModule,
     ProductMediaModule,
     ProductPriceModule,
@@ -228,6 +232,8 @@ export class ProductAppModule implements OnModuleInit {
     ServiceRegistry.getInstance().registryAll([
       ProductCommandService,
       ProductQueryService,
+      CatalogSyncLogCommandService,
+      CatalogSyncLogQueryService,
       ProductAttributeCommandService,
       ProductAttributeQueryService,
       ProductInventoryCommandService,
