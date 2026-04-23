@@ -1,6 +1,6 @@
 # PRODUCT Microservice
 
-**Creation Date**: 2026-04-22
+**Creation Date**: 2026-04-23
 
 **Author**: Ing. Persy Morell Guerra e Ing. Dailyn García Dominguez (SoftwarEnTalla CEO)
 
