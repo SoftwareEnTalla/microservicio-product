@@ -34,6 +34,7 @@ import { ProductCreatedEvent } from './productcreated.event';
 import { ProductUpdatedEvent } from './productupdated.event';
 import { ProductDeletedEvent } from './productdeleted.event';
 import { ProductActivatedEvent } from './productactivated.event';
+import { ProductEmbeddingUpdatedEvent } from './productembeddingupdated.event';
 
 export type RegisteredEventClass<T extends BaseEvent = BaseEvent> = new (
   aggregateId: string,
@@ -67,7 +68,16 @@ const createEventDefinition = <T extends BaseEvent>(
 });
 
 const EVENT_DEFINITION_OVERRIDES: Partial<Record<string, Partial<Omit<RegisteredEventDefinition, 'topic' | 'eventName' | 'eventClass'>>>> = {
-
+  'product-activated': {
+    version: '1.0.0',
+    maxRetries: 5,
+    replayable: true,
+  },
+  'product-embedding-updated': {
+    version: '1.0.0',
+    maxRetries: 3,
+    replayable: true,
+  },
 };
 
 export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
@@ -75,6 +85,7 @@ export const EVENT_DEFINITIONS: Record<string, RegisteredEventDefinition> = {
   'product-updated': createEventDefinition('product-updated', ProductUpdatedEvent, EVENT_DEFINITION_OVERRIDES['product-updated']),
   'product-deleted': createEventDefinition('product-deleted', ProductDeletedEvent, EVENT_DEFINITION_OVERRIDES['product-deleted']),
   'product-activated': createEventDefinition('product-activated', ProductActivatedEvent, EVENT_DEFINITION_OVERRIDES['product-activated']),
+  'product-embedding-updated': createEventDefinition('product-embedding-updated', ProductEmbeddingUpdatedEvent, EVENT_DEFINITION_OVERRIDES['product-embedding-updated']),
 };
 
 export const EVENT_REGISTRY: Record<string, RegisteredEventClass> = Object.fromEntries(

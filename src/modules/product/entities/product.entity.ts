@@ -259,6 +259,28 @@ export class Product extends BaseEntity {
   metadata?: Record<string, any> = {};
 
   @ApiProperty({
+    type: () => Array,
+    nullable: true,
+    description: 'Embedding semántico (pgvector) del producto calculado desde code + slug + shortDescription + longDescription + keywords. Permite búsquedas por similitud (p.ej. \'Lapiz Labial\' matchea \'Pinta labios\', \'Kit de maquillaje\').',
+  })
+  @IsArray()
+  @IsOptional()
+  @Field(() => [Float], { description: 'Embedding semántico (pgvector) del producto calculado desde code + slug + shortDescription + longDescription + keywords. Permite búsquedas por similitud (p.ej. \'Lapiz Labial\' matchea \'Pinta labios\', \'Kit de maquillaje\').', nullable: true })
+  @Column({ type: 'text', nullable: true, comment: 'Embedding semántico (pgvector) del producto calculado desde code + slug + shortDescription + longDescription + keywords. Permite búsquedas por similitud (p.ej. \'Lapiz Labial\' matchea \'Pinta labios\', \'Kit de maquillaje\').' })
+  semanticEmbedding?: number[] = [];
+
+  @ApiProperty({
+    type: () => Date,
+    nullable: true,
+    description: 'Fecha del último cálculo del embedding semántico.',
+  })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { description: 'Fecha del último cálculo del embedding semántico.', nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Fecha del último cálculo del embedding semántico.' })
+  semanticEmbeddingUpdatedAt?: Date = new Date();
+
+  @ApiProperty({
     type: () => [ProductVariant],
     nullable: true,
     description: 'Variantes del producto',

@@ -52,6 +52,7 @@ import { ModuleRef } from "@nestjs/core";
 import { ProductQueryService } from "./productquery.service";
 import { BaseEvent } from "../events/base.event";
 import { ProductActivatedEvent } from '../events/productactivated.event';
+import { ProductEmbeddingUpdatedEvent } from '../events/productembeddingupdated.event';
 
 @Injectable()
 export class ProductCommandService implements OnModuleInit {

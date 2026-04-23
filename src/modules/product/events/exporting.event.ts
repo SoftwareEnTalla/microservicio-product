@@ -31,6 +31,7 @@ export * from "./productdeleted.event";
 export * from "./productcreated.event";
 export * from "./productupdated.event";
 export * from "./productactivated.event";
+export * from "./productembeddingupdated.event";
 export * from "./event-registry";
 export * from "./base.event";
 export * from "./product-failed.event";
