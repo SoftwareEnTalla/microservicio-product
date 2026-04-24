@@ -240,6 +240,33 @@ Mismo patrón canónico: dual publish + registro en `event-registry.ts` + saga `
 
 ---
 
+## 8.5 Búsqueda semántica (pgvector + IA)
+
+El campo `semanticEmbedding` (tipo `vector`, 1536 dim., OpenAI text-embedding-3-small compatible) se calcula automáticamente al **crear/actualizar** un producto a partir de `name + code + slug + shortDescription + longDescription + description + keywords + tags + metadata`. `semanticEmbeddingUpdatedAt` guarda el timestamp del último cálculo. Al actualizar el embedding se publica el evento de dominio `ProductEmbeddingUpdated` (topic `product-embedding-updated`).
+
+### Ejemplo de uso (caso del DSL)
+
+Un usuario busca `"Lapiz Labial"` y espera recibir productos semánticamente cercanos como `"Pinta labios"` o `"Kit de maquillaje"`, aunque sus nombres no compartan tokens exactos.
+
+### Endpoint
+
+`GET /products/query/semantic-search?q=Lapiz%20Labial&semanticSearch=true&similarityThreshold=0.7&limit=25`
+
+| Query param | Tipo | Default | Descripción |
+|-------------|------|---------|-------------|
+| `q` | string | — (requerido) | Texto a buscar |
+| `semanticSearch` | boolean | `true` | Si `false` se fuerza búsqueda textual |
+| `similarityThreshold` | number | `0.7` | Umbral de similitud coseno (0..1) |
+| `limit` | number | `25` | Máximo de resultados |
+
+La respuesta incluye `searchMode`: `SEMANTIC`, `TEXTUAL`, `TEXTUAL_FALLBACK`. En modo `SEMANTIC` devuelve además el array `scores`.
+
+### Implementación técnica
+
+- Columna física: `text` con transformer JSON en TypeORM. Migración posterior puede promover a `VECTOR(1536)` real cuando pgvector esté activo en la DB.
+- Servicio: `SemanticSearchService` en `src/shared/semantic-search/`. Embedding por defecto determinista basado en hashing — apto para e2e. Reemplazar `computeEmbedding` por integración real (OpenAI `text-embedding-3-small`, sentence-transformers local, etc.) en producción.
+- Infraestructura: imagen `imresamu/postgis-pgvector:16-3.4` y `CREATE EXTENSION IF NOT EXISTS vector;` en `data-center/postgres/initdb/01-extensions.sql`.
+
 ## 9. Test E2E con curl
 
 ```bash

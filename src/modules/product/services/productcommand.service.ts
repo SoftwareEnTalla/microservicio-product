@@ -53,6 +53,7 @@ import { ProductQueryService } from "./productquery.service";
 import { BaseEvent } from "../events/base.event";
 import { ProductActivatedEvent } from '../events/productactivated.event';
 import { ProductEmbeddingUpdatedEvent } from '../events/productembeddingupdated.event';
+import { SemanticSearchService } from "src/shared/semantic-search/semantic-search.service";
 
 @Injectable()
 export class ProductCommandService implements OnModuleInit {
@@ -65,9 +66,55 @@ export class ProductCommandService implements OnModuleInit {
     private readonly commandBus: CommandBus,
     private readonly eventStore: EventStoreService,
     private readonly eventPublisher: KafkaEventPublisher,
-    private moduleRef: ModuleRef
+    private moduleRef: ModuleRef,
+    private readonly semanticSearch: SemanticSearchService,
   ) {
     //Inicialice aquí propiedades o atributos
+  }
+
+  private buildSemanticSourceText(entity: Product): string {
+    const parts: string[] = [];
+    const push = (v: any) => { if (v !== undefined && v !== null && String(v).trim() !== '') parts.push(String(v)); };
+    push((entity as any).name);
+    push((entity as any).code);
+    push((entity as any).slug);
+    push((entity as any).shortDescription);
+    push((entity as any).longDescription);
+    push((entity as any).description);
+    const keywords = (entity as any).keywords;
+    if (Array.isArray(keywords)) push(keywords.join(' '));
+    const tags = (entity as any).tags;
+    if (Array.isArray(tags)) push(tags.join(' '));
+    const metadata = (entity as any).metadata;
+    if (metadata && typeof metadata === 'object') {
+      try { push(JSON.stringify(metadata)); } catch { /* noop */ }
+    }
+    return parts.join(' \n ');
+  }
+
+  private async refreshSemanticEmbedding(entity: Product): Promise<void> {
+    if (!entity) return;
+    try {
+      const source = this.buildSemanticSourceText(entity);
+      if (!source.trim()) return;
+      const embedding = await this.semanticSearch.computeEmbedding(source);
+      const now = new Date();
+      (entity as any).semanticEmbedding = embedding;
+      (entity as any).semanticEmbeddingUpdatedAt = now;
+      await this.repository.update(entity.id, {
+        semanticEmbedding: embedding as any,
+        semanticEmbeddingUpdatedAt: now as any,
+      } as any);
+      await this.publishDslDomainEvents([
+        ProductEmbeddingUpdatedEvent.create(
+          entity.id,
+          entity,
+          (entity as any).updatedBy || 'system',
+        ),
+      ]);
+    } catch (err) {
+      this.#logger.warn(`No se pudo actualizar semanticEmbedding del product ${entity?.id}: ${(err as Error)?.message}`);
+    }
   }
 
 
@@ -193,6 +240,9 @@ export class ProductCommandService implements OnModuleInit {
       await this.applyDslServiceRules("create", createProductDtoInput as Record<string, any>, candidate, null, false);
       const entity = await this.repository.create(candidate);
       await this.applyDslServiceRules("create", createProductDtoInput as Record<string, any>, entity, null, true);
+      if (entity) {
+        await this.refreshSemanticEmbedding(entity);
+      }
       logger.info("Entity created on service:", entity);
       // Respuesta si el product no existe
       if (!entity)
@@ -302,6 +352,11 @@ export class ProductCommandService implements OnModuleInit {
       // Respuesta si el product no existe
       if (!entity)
         throw new NotFoundException("Entidades Products no encontradas.");
+      const semanticRelevantFields = ['name','code','slug','shortDescription','longDescription','description','keywords','tags','metadata'];
+      const touched = Object.keys(partialEntity || {}).some(k => semanticRelevantFields.includes(k));
+      if (touched) {
+        await this.refreshSemanticEmbedding(entity);
+      }
       // Devolver product
       return {
         ok: true,
