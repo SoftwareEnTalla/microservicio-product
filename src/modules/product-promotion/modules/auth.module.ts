@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { ProductPromotionCommandController } from "../controllers/productpromotioncommand.controller";
 import { ProductPromotionLoggingInterceptor } from "../interceptors/productpromotion.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { ProductPromotionAuthGuard } from "../guards/productpromotionauthguard.guard";
 
 @Module({
-  controllers: [ProductPromotionCommandController],
   providers: [
     ProductPromotionAuthGuard,
     ProductPromotionLoggingInterceptor,

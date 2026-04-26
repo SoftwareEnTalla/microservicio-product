@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { AppliesToCommandController } from "../controllers/appliestocommand.controller";
 import { AppliesToLoggingInterceptor } from "../interceptors/appliesto.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { AppliesToAuthGuard } from "../guards/appliestoauthguard.guard";
 
 @Module({
-  controllers: [AppliesToCommandController],
   providers: [
     AppliesToAuthGuard,
     AppliesToLoggingInterceptor,

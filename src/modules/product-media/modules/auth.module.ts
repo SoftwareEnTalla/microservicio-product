@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { ProductMediaCommandController } from "../controllers/productmediacommand.controller";
 import { ProductMediaLoggingInterceptor } from "../interceptors/productmedia.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { ProductMediaAuthGuard } from "../guards/productmediaauthguard.guard";
 
 @Module({
-  controllers: [ProductMediaCommandController],
   providers: [
     ProductMediaAuthGuard,
     ProductMediaLoggingInterceptor,

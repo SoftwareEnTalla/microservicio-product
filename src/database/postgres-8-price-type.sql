@@ -5,7 +5,7 @@
 -- (regla seccion 4.9.6 de docs/help.md). CRUD CQRS completo.
 -- Idempotente: INSERT ... ON CONFLICT (code) DO UPDATE.
 -- ====================================================================
-INSERT INTO "price_type_base_entity" ("code", "displayName", "description", "metadata", "createdBy", "active", "type")
+INSERT INTO "price_type_base_entity" ("code", "displayName", "description", "metadata", "createdBy", "isActive", "type")
 VALUES
   ('BASE', 'Base', '', '{}'::jsonb, 'system', TRUE, 'pricetype'),
   ('LIST', 'List', '', '{}'::jsonb, 'system', TRUE, 'pricetype'),
@@ -13,5 +13,5 @@ VALUES
   ('SPECIAL', 'Special', '', '{}'::jsonb, 'system', TRUE, 'pricetype')
 ON CONFLICT ("code") DO UPDATE SET
   "displayName"      = EXCLUDED."displayName",
-  "active"           = TRUE,
+  "isActive"           = TRUE,
   "modificationDate" = NOW();

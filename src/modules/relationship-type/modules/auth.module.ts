@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { RelationshipTypeCommandController } from "../controllers/relationshiptypecommand.controller";
 import { RelationshipTypeLoggingInterceptor } from "../interceptors/relationshiptype.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { RelationshipTypeAuthGuard } from "../guards/relationshiptypeauthguard.guard";
 
 @Module({
-  controllers: [RelationshipTypeCommandController],
   providers: [
     RelationshipTypeAuthGuard,
     RelationshipTypeLoggingInterceptor,

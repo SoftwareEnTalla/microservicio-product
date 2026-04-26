@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { StockStatusCommandController } from "../controllers/stockstatuscommand.controller";
 import { StockStatusLoggingInterceptor } from "../interceptors/stockstatus.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { StockStatusAuthGuard } from "../guards/stockstatusauthguard.guard";
 
 @Module({
-  controllers: [StockStatusCommandController],
   providers: [
     StockStatusAuthGuard,
     StockStatusLoggingInterceptor,

@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { MediaTypeCommandController } from "../controllers/mediatypecommand.controller";
 import { MediaTypeLoggingInterceptor } from "../interceptors/mediatype.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { MediaTypeAuthGuard } from "../guards/mediatypeauthguard.guard";
 
 @Module({
-  controllers: [MediaTypeCommandController],
   providers: [
     MediaTypeAuthGuard,
     MediaTypeLoggingInterceptor,

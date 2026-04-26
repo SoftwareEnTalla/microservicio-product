@@ -30,13 +30,11 @@
 
 
 import { Module } from "@nestjs/common";
-import { ProductRelationshipCommandController } from "../controllers/productrelationshipcommand.controller";
 import { ProductRelationshipLoggingInterceptor } from "../interceptors/productrelationship.logging.interceptor";
 import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { ProductRelationshipAuthGuard } from "../guards/productrelationshipauthguard.guard";
 
 @Module({
-  controllers: [ProductRelationshipCommandController],
   providers: [
     ProductRelationshipAuthGuard,
     ProductRelationshipLoggingInterceptor,
