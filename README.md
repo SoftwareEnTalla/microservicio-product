@@ -285,3 +285,18 @@
 | | |____types
 |____utils
 ```
+
+<!-- nomencladores-propios:start -->
+
+## Nomencladores propios
+
+Este microservicio mantiene localmente los siguientes nomencladores (regla §4.9.6 de `docs/help.md` — entidad XML independiente con CRUD CQRS, FK desde agregados padres, seed SQL local idempotente).
+
+| Nomenclador | Modelo DSL | Seed SQL |
+|---|---|---|
+| `product-status` | [../models/product/product-status.xml](../models/product/product-status.xml) | [./src/database/postgres-2-product-status.sql](./src/database/postgres-2-product-status.sql) |
+| `product-visibility` | [../models/product/product-visibility.xml](../models/product/product-visibility.xml) | [./src/database/postgres-3-product-visibility.sql](./src/database/postgres-3-product-visibility.sql) |
+
+Estos nomencladores se siembran automáticamente en cada arranque (`init-order.txt`). Si más adelante un segundo microservicio empieza a consumir alguno, se promueve a `catalog-service` según la regla.
+
+<!-- nomencladores-propios:end -->

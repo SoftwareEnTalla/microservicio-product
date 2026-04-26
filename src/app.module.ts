@@ -91,6 +91,18 @@ import LoggerService, { logger } from "@core/logs/logger";
 
 */
 
+import { HorizontalModule } from "@common/horizontal";
+
+import { NomencladorListenersModule } from './modules/nomenclador-listeners/nomenclador-listeners.module';
+import { AppliesToModule } from "./modules/applies-to/modules/appliesto.module";
+import { MediaTypeModule } from "./modules/media-type/modules/mediatype.module";
+import { PriceTypeModule } from "./modules/price-type/modules/pricetype.module";
+import { ProductStatusModule } from "./modules/product-status/modules/productstatus.module";
+import { ProductVisibilityModule } from "./modules/product-visibility/modules/productvisibility.module";
+import { PromotionTypeModule } from "./modules/promotion-type/modules/promotiontype.module";
+import { RelationshipTypeModule } from "./modules/relationship-type/modules/relationshiptype.module";
+import { StockStatusModule } from "./modules/stock-status/modules/stockstatus.module";
+import { TargetEntityTypeModule } from "./modules/target-entity-type/modules/targetentitytype.module";
 @Module({
   imports: [
     // Se importa/registra el módulo de caché
@@ -139,6 +151,7 @@ import LoggerService, { logger } from "@core/logs/logger";
      * Módulos Product de la aplicación
      */
     CqrsModule,
+    HorizontalModule,
     ProductModule,
         CatalogSyncLogModule,
     ProductAttributeModule,
@@ -168,6 +181,17 @@ import LoggerService, { logger } from "@core/logs/logger";
           }),
         ]
       : []),
+  
+    NomencladorListenersModule,
+      AppliesToModule,
+    MediaTypeModule,
+    PriceTypeModule,
+    ProductStatusModule,
+    ProductVisibilityModule,
+    PromotionTypeModule,
+    RelationshipTypeModule,
+    StockStatusModule,
+    TargetEntityTypeModule,
   ],
 
   /**

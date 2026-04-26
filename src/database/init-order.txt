@@ -1,0 +1,10 @@
+postgres-1-catalog-sync-log.sql
+postgres-2-product-status.sql
+postgres-3-product-visibility.sql
+postgres-4-applies-to.sql
+postgres-5-target-entity-type.sql
+postgres-6-stock-status.sql
+postgres-7-media-type.sql
+postgres-8-price-type.sql
+postgres-9-promotion-type.sql
+postgres-10-relationship-type.sql
