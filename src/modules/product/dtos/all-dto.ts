@@ -189,6 +189,16 @@ export class BaseProductDto {
   primaryCategoryId!: string;
 
   @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Media principal mínima para activación',
+  })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { description: 'Media principal mínima para activación', nullable: true })
+  primaryMediaId?: string;
+
+  @ApiProperty({
     type: () => Object,
     nullable: true,
     description: 'Categorías adicionales jerárquicas',

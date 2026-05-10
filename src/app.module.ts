@@ -92,6 +92,7 @@ import LoggerService, { logger } from "@core/logs/logger";
 */
 
 import { HorizontalModule } from "@common/horizontal";
+import { ProductCommerceSummaryModule } from "./modules/product-commerce-summary/product-commerce-summary.module";
 
 import { NomencladorListenersModule } from './modules/nomenclador-listeners/nomenclador-listeners.module';
 import { AppliesToModule } from "./modules/applies-to/modules/appliesto.module";
@@ -153,6 +154,7 @@ import { TargetEntityTypeModule } from "./modules/target-entity-type/modules/tar
     CqrsModule,
     HorizontalModule,
     ProductModule,
+    ProductCommerceSummaryModule,
         CatalogSyncLogModule,
     ProductAttributeModule,
     ProductInventoryModule,

@@ -160,6 +160,17 @@ export class Product extends BaseEntity {
   primaryCategoryId!: string;
 
   @ApiProperty({
+    type: () => String,
+    nullable: true,
+    description: 'Media principal mínima requerida para activación',
+  })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { description: 'Media principal mínima requerida para activación', nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'Media principal mínima requerida para activación' })
+  primaryMediaId?: string;
+
+  @ApiProperty({
     type: () => Object,
     nullable: true,
     description: 'Categorías adicionales jerárquicas',
@@ -326,15 +337,11 @@ export class Product extends BaseEntity {
   inventories?: ProductInventory[];
 
   protected executeDslLifecycle(): void {
-    // Rule: active-product-must-have-media
-    // Un producto activo requiere al menos una imagen.
-    if (!(this.status === 'ACTIVE')) {
+    if (this.status === 'ACTIVE' && !this.primaryMediaId) {
       throw new Error('PRODUCT_001: El producto activo requiere media visual mínima');
     }
 
-    // Rule: public-product-must-be-active
-    // Un producto público debe estar activo.
-    if (!(this.visibility === 'PUBLIC' && this.status === 'ACTIVE')) {
+    if (this.visibility === 'PUBLIC' && this.status !== 'ACTIVE') {
       throw new Error('PRODUCT_002: La visibilidad pública exige estado activo');
     }
   }

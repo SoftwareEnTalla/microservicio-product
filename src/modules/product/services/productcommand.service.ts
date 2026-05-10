@@ -166,13 +166,15 @@ export class ProductCommandService implements OnModuleInit {
     if (operation === 'create') {
       // Regla de servicio: active-product-must-have-media
       // Un producto activo requiere al menos una imagen.
-      if (!(this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE')) {
+      if (this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE' &&
+          !this.dslValue(entityData, currentData, inputData, 'primaryMediaId')) {
         throw new Error('PRODUCT_001: El producto activo requiere media visual mínima');
       }
 
       // Regla de servicio: public-product-must-be-active
       // Un producto público debe estar activo.
-      if (!(this.dslValue(entityData, currentData, inputData, 'visibility') === 'PUBLIC' && this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE')) {
+      if (this.dslValue(entityData, currentData, inputData, 'visibility') === 'PUBLIC' &&
+          this.dslValue(entityData, currentData, inputData, 'status') !== 'ACTIVE') {
         throw new Error('PRODUCT_002: La visibilidad pública exige estado activo');
       }
 
@@ -181,13 +183,15 @@ export class ProductCommandService implements OnModuleInit {
     if (operation === 'update') {
       // Regla de servicio: active-product-must-have-media
       // Un producto activo requiere al menos una imagen.
-      if (!(this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE')) {
+      if (this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE' &&
+          !this.dslValue(entityData, currentData, inputData, 'primaryMediaId')) {
         throw new Error('PRODUCT_001: El producto activo requiere media visual mínima');
       }
 
       // Regla de servicio: public-product-must-be-active
       // Un producto público debe estar activo.
-      if (!(this.dslValue(entityData, currentData, inputData, 'visibility') === 'PUBLIC' && this.dslValue(entityData, currentData, inputData, 'status') === 'ACTIVE')) {
+      if (this.dslValue(entityData, currentData, inputData, 'visibility') === 'PUBLIC' &&
+          this.dslValue(entityData, currentData, inputData, 'status') !== 'ACTIVE') {
         throw new Error('PRODUCT_002: La visibilidad pública exige estado activo');
       }
 
