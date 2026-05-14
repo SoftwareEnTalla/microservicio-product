@@ -22,6 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@apollo/server": "^5.5.0",
     "@eventstore/db-client": "^6.2.1",
     "@jsverse/transloco": "^7.6.1",
     "@jsverse/transloco-utils": "^7.0.2",
@@ -37,7 +38,6 @@
     "@nestjs/throttler": "^6.2.1",
     "@nestjs/typeorm": "^11.0.0",
     "@ngneat/transloco": "^6.0.4",
-    "apollo-server-express": "^3.13.0",
     "cache-manager": "^6.4.1",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
