@@ -33,9 +33,17 @@ export class ProductCommerceSummaryService {
             pricedProducts: 0,
             inventoryTrackedProducts: 0,
             lowStockProducts: 0,
+            availableStockUnits: 0,
+            reservedStockUnits: 0,
             primaryMediaProducts: 0,
             activePromotions: 0,
             promotionalProducts: 0,
+            grossCatalogValue: 0,
+            netCatalogValue: 0,
+            discountExposure: 0,
+            averageBasePrice: 0,
+            averageNetPrice: 0,
+            netPriceRealizationPercent: 0,
             publicationReadinessPercent: 0,
           },
           latestPrices: [],
@@ -54,9 +62,64 @@ export class ProductCommerceSummaryService {
          (SELECT COUNT(DISTINCT "productId")::int FROM product_price_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productprice') AS "pricedProducts",
          (SELECT COUNT(DISTINCT "productId")::int FROM product_inventory_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productinventory') AS "inventoryTrackedProducts",
          (SELECT COUNT(DISTINCT "productId")::int FROM product_inventory_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productinventory' AND COALESCE("availableStock", 0) <= COALESCE("reorderPoint", 0)) AS "lowStockProducts",
+         (SELECT COALESCE(SUM(COALESCE("availableStock", 0)), 0)::int FROM product_inventory_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productinventory') AS "availableStockUnits",
+         (SELECT COALESCE(SUM(COALESCE("reservedStock", 0)), 0)::int FROM product_inventory_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productinventory') AS "reservedStockUnits",
          (SELECT COUNT(DISTINCT "productId")::int FROM product_media_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productmedia' AND COALESCE("isPrimary", false) = true) AS "primaryMediaProducts",
          (SELECT COUNT(*)::int FROM product_promotion_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productpromotion' AND UPPER(COALESCE(status, '')) = 'ACTIVE') AS "activePromotions",
          (SELECT COUNT(DISTINCT "productId")::int FROM product_promotion_base_entity WHERE COALESCE("isActive", true) = true AND type = 'productpromotion') AS "promotionalProducts"`,
+    );
+
+    const [financials] = await dataSource.query(
+      `WITH active_prices AS (
+         SELECT
+           id,
+           COALESCE("productId"::text, '') AS "productId",
+           COALESCE("variantId"::text, '') AS "variantId",
+           COALESCE(amount, 0)::numeric AS amount
+         FROM product_price_base_entity
+         WHERE COALESCE("isActive", true) = true
+           AND type = 'productprice'
+           AND UPPER(COALESCE(status, 'ACTIVE')) = 'ACTIVE'
+       ),
+       active_promotions AS (
+         SELECT
+           COALESCE("productId"::text, '') AS "productId",
+           COALESCE("variantId"::text, '') AS "variantId",
+           MIN(NULLIF(COALESCE("specialPrice", 0), 0))::numeric AS "bestSpecialPrice",
+           MAX(COALESCE("discountPercent", 0))::numeric AS "maxDiscountPercent"
+         FROM product_promotion_base_entity
+         WHERE COALESCE("isActive", true) = true
+           AND type = 'productpromotion'
+           AND UPPER(COALESCE(status, 'ACTIVE')) = 'ACTIVE'
+         GROUP BY COALESCE("productId"::text, ''), COALESCE("variantId"::text, '')
+       ),
+       price_effects AS (
+         SELECT
+           prices.amount,
+           CASE
+             WHEN promotions."bestSpecialPrice" IS NOT NULL AND promotions."bestSpecialPrice" > 0
+               THEN LEAST(prices.amount, promotions."bestSpecialPrice")
+             WHEN COALESCE(promotions."maxDiscountPercent", 0) > 0
+               THEN GREATEST(prices.amount * (1 - LEAST(promotions."maxDiscountPercent", 100) / 100.0), 0)
+             ELSE prices.amount
+           END AS net_amount
+         FROM active_prices prices
+         LEFT JOIN active_promotions promotions
+           ON promotions."productId" = prices."productId"
+          AND promotions."variantId" = prices."variantId"
+       )
+       SELECT
+         COALESCE(SUM(amount), 0)::float AS "grossCatalogValue",
+         COALESCE(SUM(net_amount), 0)::float AS "netCatalogValue",
+         COALESCE(SUM(GREATEST(amount - net_amount, 0)), 0)::float AS "discountExposure",
+         COALESCE(AVG(amount), 0)::float AS "averageBasePrice",
+         COALESCE(AVG(net_amount), 0)::float AS "averageNetPrice",
+         CASE
+           WHEN COALESCE(SUM(amount), 0) > 0
+             THEN ROUND((SUM(net_amount) / SUM(amount)) * 100)
+           ELSE 0
+         END::int AS "netPriceRealizationPercent"
+       FROM price_effects`,
     );
 
     const latestPrices = await dataSource.query(
@@ -123,9 +186,17 @@ export class ProductCommerceSummaryService {
           pricedProducts: Number(totals?.pricedProducts ?? 0),
           inventoryTrackedProducts: Number(totals?.inventoryTrackedProducts ?? 0),
           lowStockProducts: Number(totals?.lowStockProducts ?? 0),
+          availableStockUnits: Number(totals?.availableStockUnits ?? 0),
+          reservedStockUnits: Number(totals?.reservedStockUnits ?? 0),
           primaryMediaProducts: Number(totals?.primaryMediaProducts ?? 0),
           activePromotions: Number(totals?.activePromotions ?? 0),
           promotionalProducts: Number(totals?.promotionalProducts ?? 0),
+          grossCatalogValue: Number(financials?.grossCatalogValue ?? 0),
+          netCatalogValue: Number(financials?.netCatalogValue ?? 0),
+          discountExposure: Number(financials?.discountExposure ?? 0),
+          averageBasePrice: Number(financials?.averageBasePrice ?? 0),
+          averageNetPrice: Number(financials?.averageNetPrice ?? 0),
+          netPriceRealizationPercent: Number(financials?.netPriceRealizationPercent ?? 0),
           publicationReadinessPercent: totalProducts > 0 ? Math.round((readinessBase / totalProducts) * 100) : 0,
         },
         latestPrices: latestPrices as ProductCommerceRow[],
